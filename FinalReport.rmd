@@ -3,9 +3,10 @@ title: "Covid91 vaccine study Final2021"
 author: "Melany Vasquez"
 date: "Summer 2021"
 output: 
-    html_document:
-    toc: true
-    toc_depth: 5
+  html_document:
+        toc: true
+        toc_depth: 5
+        
 ---
 
 ```{r include=FALSE,echo=FALSE}
@@ -15,11 +16,12 @@ require(forcats)
 OldData <-read.csv(file="covid91.csv",header=TRUE)
 #recode to remove the annoying "X" from the dataframe
 FinalData <- OldData %>% mutate(infected = recode(infected, aids = "covid", none = "OK" )) %>% select(-one_of("X"))
-FinalData$treatment <- as.factor(FinalData$treatment)
-FinalData$sex <- as.factor(FinalData$sex)
-FinalData$infected <- as.factor(FinalData$infected)
-FinalData$LGBTQ <- as.factor(FinalData$LGBTQ)
-FinalData$DrugUser <- as.factor(FinalData$DrugUser)
+FinalData <- FinalData %>%
+mutate(across(where(is.character), as.factor))
+guy = filter(FinalData, sex =="guy")
+gal = filter(FinalData, sex =="gal")
+gay = filter(FinalData, LGBTQ =="gay")
+DrugUser = filter(FinalData, DrugUser =="yes")
 ```
 
 # Introduction
@@ -27,16 +29,176 @@ FinalData$DrugUser <- as.factor(FinalData$DrugUser)
 A new  preventative vaccine (covid91) is under test in clinical trials. Given the nature of this vaccine it is suspected that the drug may exhibit different effectiveness across the variety of subpopulations tracked. Consider population subgroups by gender( guys and gals), drug use, and sexual orientation. Write a complete report that separately considers this drug for each subgroup and your recommendations as to whether people in the subgroup should take the vaccine. Structure your report in four sections each devoted to one of the four subgroups, use null and alternative hypothesis statements and correct statistical verbage when referencing p-values in conclusions.
 
 
-# Guys "sex = guy"
+# Guys
+
+### Barplot
 
 
-# Gals "sex = gal"
+```{r}
+dd2 <- guy %>% group_by(infected,treatment) %>% summarize(count=n()) %>% mutate(prcnt=count/sum(count))
 
 
-# Sexual Orientation "LGBTQ = gay"
+# the group_by followed by summarize(count=n())
+
+basicC <- ggplot(dd2,aes(x=infected,y=count,fill=treatment))
+basicC + geom_bar(stat="identity",position="dodge")
+
+#Now for percentage plot
+
+basicCC <- ggplot(dd2,aes(x=infected,y=prcnt*100,fill=treatment)) 
+basicCC + geom_bar(stat="identity", position = "dodge")
+```
 
 
-# Drug Users "Drug user = yes"
+This plot represents the population of guys(males) people and the relationship to the contraction of covid-19 by either taking the vaccine or the placebo.
+
+The plot above showd that 58% of the people that take the vaccine did get covid-19, meanwhile 42% of the people who got the placebo contracted covid-10.The vaccine looks to be ineffective in protection against covid. The odds of getting covid while vaccinated is 3:2. Men seemed to take the drug were 1/2 times more likely to get covid-19 than those who take the placebo.
+
+### Numerical  
+
+```{r}
+table1 <- xtabs(~infected + treatment, data=guy)
+rowPerc(table1)
+colPerc(table1)
+```
+
+### Inferential
+
+```{r}
+chisq.test(table1)
+chisqtestGC(table1)
+fisher.test(table1)
+```
 
 
-#
+
+
+
+# Gals 
+
+### Barplot
+
+```{r}
+dd2 <- gal %>% group_by(infected,treatment) %>% summarize(count=n()) %>% mutate(prcnt=count/sum(count))
+
+
+# the group_by followed by summarize(count=n())
+
+basicC <- ggplot(dd2,aes(x=infected,y=count,fill=treatment))
+basicC + geom_bar(stat="identity",position="dodge")
+
+#Now for percentage plot
+
+basicCC <- ggplot(dd2,aes(x=infected,y=prcnt*100,fill=treatment)) 
+basicCC + geom_bar(stat="identity", position = "dodge")
+```
+
+This plot represents the population of gals(females) and the relationship to the contraction of covid-19 by either talking the vaccine or the placebo.
+
+In this plot, you can visually see that the females are doing far better than the men . It implys that 33% of individuals were given the vaccine were reported to have contracted covid. That also implies that about 67% of the people that were infected with covid were taking the placebo. The odds of getting infected by covid while being vaccinated is 1:2, and the gals that take the vaccine are half as likely to get infected with covid than those hwo take the placebo.
+
+### Numerical  
+
+```{r}
+table1 <- xtabs(~infected + treatment, data=gal)
+rowPerc(table1)
+colPerc(table1)
+```
+
+### Inferential
+
+```{r}
+chisq.test(table1)
+chisqtestGC(table1)
+fisher.test(table1)
+```
+
+
+
+
+
+# Sexual Orientation
+
+### Barplot
+
+```{r}
+dd2 <- gay  %>% group_by(infected,treatment) %>% summarize(count=n()) %>% mutate(prcnt=count/sum(count))
+
+
+# the group_by followed by summarize(count=n())
+
+basicC <- ggplot(dd2,aes(x=infected,y=count,fill=treatment))
+basicC + geom_bar(stat="identity",position="dodge")
+
+#Now for percentage plot
+
+basicCC <- ggplot(dd2,aes(x=infected,y=prcnt*100,fill=treatment)) 
+basicCC + geom_bar(stat="identity", position = "dodge")
+```
+
+This plot represnts the population of the gay/ LGBTQ people and the relationship to the contraction of covid by taking the vaccine or the placebo.
+
+This barplot shows that 71% of people that took the vaccine were infected with covid including the 29% who take th eplacebo.The odds of getting infected with covid while taking the vaccine are 3:1 . The people who claimed to be gay and were vaccinated were three times as likely to be infected with covid than those who take the placebo.
+
+### Numerical  
+
+```{r}
+table1 <- xtabs(~infected + treatment, data=gay)
+rowPerc(table1)
+colPerc(table1)
+```
+
+### Inferential
+
+```{r}
+chisq.test(table1)
+chisqtestGC(table1)
+fisher.test(table1)
+```
+
+
+
+
+
+# Drug Users 
+
+```{r}
+dd2 <- DrugUser %>% group_by(infected,treatment) %>% summarize(count=n()) %>% mutate(prcnt=count/sum(count))
+
+
+# the group_by followed by summarize(count=n())
+
+basicC <- ggplot(dd2,aes(x=infected,y=count,fill=treatment))
+basicC + geom_bar(stat="identity",position="dodge")
+
+#Now for percentage plot
+
+basicCC <- ggplot(dd2,aes(x=infected,y=prcnt*100,fill=treatment)) 
+basicCC + geom_bar(stat="identity", position = "dodge")
+```
+
+This plot represents the population of people who answered yes to drugUse and the relationship to the contraction of covid while taking either the vaccine or the placebo.
+
+This barplot complies that 34% of people who are drug users and recieved the vaccine contracted covid. Implying that bout 66% of the drug users that took the placebo were infected with covid. The odd of getting covid while taking the vaccine is 1:2. The drug users that took the vaccine were half as likely to get covid than those who take th eplacebo.
+
+### Numerical  
+
+```{r}
+table1 <- xtabs(~infected + treatment, data=DrugUser)
+rowPerc(table1)
+colPerc(table1)
+```
+
+
+### Inferential
+
+```{r}
+chisq.test(table1)
+chisqtestGC(table1)
+fisher.test(table1)
+```
+
+
+# Conclusion Recommendations
+
+
