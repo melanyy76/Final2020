@@ -201,4 +201,10 @@ fisher.test(table1)
 
 # Conclusion Recommendations
 
+The Covid-19 vaccine was not effective in protecting men against the covid-19, the ratio of being infected was set as 3:2.
+The Covid-19 vaccine was successful in protecting women against Covid-19, the odds ratio being 1:2.
+The Covid-19 vaccine was not effective in treating people who identified as gay. The odds ratio of being infected is 3:1.
+The individuals that were Drug Users were effectively protected by the vaccine, The odds ratio of being infected was set 1:2,
+
+If you are a male of identify as gay it is not recommended to recieve the vaccination. However, if you are a female or a druguser, the vaccine was reported to have been effective. 
 
