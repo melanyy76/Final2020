@@ -131,7 +131,7 @@ hi=(guysfish$conf.int[2]/(guysfish$conf.int[2] +1))*100
 options(digits=2)
 ```
 
-# Effectiveness Confidence Interval `r low` to `r hi`
+### Effectiveness Confidence Interval `r low` to `r hi`
 
 
 
@@ -199,7 +199,7 @@ hi=(galsfish$conf.int[2]/(galsfish$conf.int[2] +1))
 options(digits=2)
 ```
 
-# Effectiveness Confidence Interval, `r low` to `r hi`)
+### Effectiveness Confidence Interval, `r low` to `r hi`)
 
 
 
@@ -266,7 +266,7 @@ hi=(gayfish$conf.int[2]/(gayfish$conf.int[2] +1))
 options(digits=2)
 ```
 
-# Effectiveness Confidence Interval `r low` to `r hi`
+### Effectiveness Confidence Interval `r low` to `r hi`
 
 
 
@@ -322,7 +322,7 @@ The fishers exact test illustrates that the odds ratio is 33.
 DrugUsers(yes) who got the drug were about 2.5 times more likely to get covid-19 than those who only took the placebo.
 Since the p-value is a small of 6e-06, it can help conclude that we can reject the null hypothesis amd can confirm that those who are vaccinated and say "yes" to Drug Use are less likely to get infeccted by covid-19.
 
-# Effectiveness Confidence Interval `r low` to `r hi`
+### Effectiveness Confidence Interval `r low` to `r hi`
 
 ```{r}
 effect <- yesfish$p.value/(yesfish$p.value +1)
