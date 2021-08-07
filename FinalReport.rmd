@@ -24,15 +24,57 @@ gay = filter(FinalData, LGBTQ =="gay")
 DrugUser = filter(FinalData, DrugUser =="yes")
 ```
 
+```{r}
+# see what happens here by unmasking line 40 or 42 or both - note it will fail if data not factor 
+#FinalData$treatment <- relevel(FinalData$treatment,ref = "placebo")
+#FinalData$infected <- relevel(FinalData$infected, ref="none")
+```
+
+
+
 # Introduction
 
 A new  preventative vaccine (covid91) is under test in clinical trials. Given the nature of this vaccine it is suspected that the drug may exhibit different effectiveness across the variety of subpopulations tracked. Consider population subgroups by gender( guys and gals), drug use, and sexual orientation. Write a complete report that separately considers this drug for each subgroup and your recommendations as to whether people in the subgroup should take the vaccine. Structure your report in four sections each devoted to one of the four subgroups, use null and alternative hypothesis statements and correct statistical verbage when referencing p-values in conclusions.
+
+# Coding Details
+
+```{r}
+guysdata <- filter(FinalData, sex == "guy")
+guysdata$sex <- as.factor(guysdata$sex)
+guysdata$treatment <- as.factor(guysdata$treatment)
+```
+
+```{r}
+Femaledata <- filter(FinalData, sex == "gal")
+Femaledata$sex <- as.factor(Femaledata$sex)
+Femaledata$treatment <- as.factor(Femaledata$treatment)
+
+Femaledata$infected <- relevel(Femaledata$infected,ref = "covid")
+Femaledata$treatment <- relevel(Femaledata$treatment,ref = "placebo")
+```
+
+```{r}
+LGBTQdata <- filter(FinalData, LGBTQ == "gay")
+LGBTQdata$sex <- as.factor(LGBTQdata$sex)
+LGBTQdata$treatment <- as.factor(LGBTQdata$treatment)
+```
+
+```{r}
+DrugUserdata <- filter(FinalData, DrugUser == "yes")
+DrugUserdata$sex <- as.factor(DrugUserdata$sex)
+DrugUserdata$treatment <- as.factor(DrugUserdata$treatment)
+```
+
 
 
 # Guys
 
 ### Barplot
-
+```{r}
+guysdata <- filter(FinalData, sex == "guy")
+guysdata$sex <- as.factor(guysdata$sex)
+guysdata$treatment <- as.factor(guysdata$treatment)
+```
 
 ```{r}
 dd2 <- guy %>% group_by(infected,treatment) %>% summarize(count=n()) %>% mutate(prcnt=count/sum(count))
@@ -67,19 +109,44 @@ colPerc(table1)
 ```{r}
 chisq.test(table1)
 chisqtestGC(table1)
-fisher.test(table1)
+guysfish <- fisher.test(table1)
+guysfish
+```
+The information to be most specified is the results of the output fishers exact test. The p-value is 6e-04 indicating that it is extremely small number. This number gives the impression that these results aren't likely to occur by chance and resulting the Null hypothesis can be rejeceted.
+
+The Null hypothesis predicted that the details related to covid-19 are independent of sex. Since it is clear that sex does play a rate of individuals , the alternative hypothesis , that there is a correlation between covid and sex.
+
+Like the odd ratio above illustrates, guys (men) who recieved the vaccine were 1.5 times more likely to get covid-19 than those who take the placebo.
+
+
+```{r}
+effect <- guysfish$p.value/(guysfish$p.value +1)
+effectivenessguy = guysfish$estimate/(guysfish$estimate +1)
+print(effectivenessguy*100)
 ```
 
+```{r}
+low=(guysfish$conf.int[1]/(guysfish$conf.int[1] +1))*100
+hi=(guysfish$conf.int[2]/(guysfish$conf.int[2] +1))*100
+options(digits=2)
+```
 
+### Effectiveness Confidence Interval `r low` to `r hi`
 
 
 
 # Gals 
+```{r}
+Femaledata <- filter(FinalData, sex == "gal")
+Femaledata$sex <- as.factor(Femaledata$sex)
+Femaledata$treatment <- as.factor(Femaledata$treatment)
 
+Femaledata$infected <- relevel(Femaledata$infected,ref = "covid")
+```
 ### Barplot
 
 ```{r}
-dd2 <- gal %>% group_by(infected,treatment) %>% summarize(count=n()) %>% mutate(prcnt=count/sum(count))
+gals <- Femaledata %>% group_by(infected,treatment) %>% summarize(count=n()) %>% mutate(prcnt=count/sum(count))
 
 
 # the group_by followed by summarize(count=n())
@@ -100,19 +167,39 @@ In this plot, you can visually see that the females are doing far better than th
 ### Numerical  
 
 ```{r}
-table1 <- xtabs(~infected + treatment, data=gal)
-rowPerc(table1)
-colPerc(table1)
+table2 <- xtabs(~treatment + infected, data=Femaledata)
+rowPerc(table2)
+colPerc(table2)
+print(table2)
 ```
 
 ### Inferential
 
 ```{r}
-chisq.test(table1)
-chisqtestGC(table1)
-fisher.test(table1)
+chisq.test(table2)
+chisqtestGC(table2)
+galsfish <- fisher.test(table2)
+galsfish
 ```
 
+The fishers exact test illustrates that the odds ratio is 33.
+Gals(women) who got the drug were about 0.49 times more likely to get covid-19 than women that only took the placebo.
+The p-value represents a total of 4e-16, (4E16) is such a larger number we can accept the Null hypothesis and confirm that females who are vaccinated are less likely to be at risk to get infected by the covid-19 disease.
+
+```{r}
+effect <- galsfish$p.value/(galsfish$p.value +1)
+effectivenessgal = galsfish$estimate/(galsfish$estimate +1)
+print(effectivenessgal*100)
+```
+
+
+```{r}
+low=(galsfish$conf.int[1]/(galsfish$conf.int[1] +1))
+hi=(galsfish$conf.int[2]/(galsfish$conf.int[2] +1))
+options(digits=2)
+```
+
+# "Effectiveness Confidence Interval", `r low` to `r hi`)
 
 
 
@@ -120,6 +207,12 @@ fisher.test(table1)
 # Sexual Orientation
 
 ### Barplot
+```{r}
+LGBTQdata <- filter(FinalData, LGBTQ == "gay")
+LGBTQdata$DrugUser <- as.factor(LGBTQdata$LGBTQ)
+LGBTQdata$infected <- as.factor(LGBTQdata$infected)
+LGBTQdata$infected <- relevel(LGBTQdata$infected, "OK")
+```
 
 ```{r}
 dd2 <- gay  %>% group_by(infected,treatment) %>% summarize(count=n()) %>% mutate(prcnt=count/sum(count))
@@ -151,16 +244,42 @@ colPerc(table1)
 ### Inferential
 
 ```{r}
-chisq.test(table1)
-chisqtestGC(table1)
-fisher.test(table1)
+chisq.test(table3)
+chisqtestGC(table3)
+gayfish <- fisher.test(table3)
+gayfish
 ```
 
+The fishers exact test illustrates that the odds ratio is 71.
+Gays(LGBTQ) who got the drug were about 2.5 times more likely to get covid-19 than those who only took the placebo.
+According to the fisher results above imply that the p-value is at a 1e-05 , and shows that it is such a large number of 1*10^5, we can confirm and accept the Null hypothesis an concl;ude that those in LGBTQ are at risk of getting infected by covid-19.
+
+```{r}
+effect <- gayfish$p.value/(gayfish$p.value +1)
+effectivenessgal = gayfish$estimate/(gayfish$estimate +1)
+print(effectivenessgal*100)
+```
+
+```{r}
+low=(gayfish$conf.int[1]/(gayfish$conf.int[1] +1))
+hi=(gayfish$conf.int[2]/(gayfish$conf.int[2] +1))
+options(digits=2)
+```
+
+### Effectiveness Confidence Interval `r low` to `r hi`
 
 
 
 
 # Drug Users 
+
+### Barplot
+```{r}
+DrugUserdata <- filter(FinalData, DrugUser == "yes")
+DrugUserdata$sex <- as.factor(DrugUserdata$sex)
+DrugUserdata$treatment <- as.factor(DrugUserdata$treatment)
+```
+
 
 ```{r}
 dd2 <- DrugUser %>% group_by(infected,treatment) %>% summarize(count=n()) %>% mutate(prcnt=count/sum(count))
@@ -185,8 +304,8 @@ This barplot complies that 34% of people who are drug users and recieved the vac
 
 ```{r}
 table1 <- xtabs(~infected + treatment, data=DrugUser)
-rowPerc(table1)
-colPerc(table1)
+rowPerc(table3)
+colPerc(table3)
 ```
 
 
@@ -195,16 +314,36 @@ colPerc(table1)
 ```{r}
 chisq.test(table1)
 chisqtestGC(table1)
-fisher.test(table1)
+yesfish <- fisher.test(table1)
+yesfish
 ```
+
+The fishers exact test illustrates that the odds ratio is 33.
+DrugUsers(yes) who got the drug were about 2.5 times more likely to get covid-19 than those who only took the placebo.
+Since the p-value is a small of 6e-06, it can help conclude that we can reject the null hypothesis amd can confirm that those who are vaccinated and say "yes" to Drug Use are less likely to get infeccted by covid-19.
+
+```{r}
+effect <- yesfish$p.value/(yesfish$p.value +1)
+effectivenessyes = yesfish$estimate/(yesfish$estimate +1)
+print(effectivenessgal*100)
+```
+
+```{r}
+low=(gayfish$conf.int[1]/(gayfish$conf.int[1] +1))
+hi=(gayfish$conf.int[2]/(gayfish$conf.int[2] +1))
+options(digits=2)
+```
+
+### Effectiveness Confidence Interval `r low` to `r hi`
+
 
 
 # Conclusion Recommendations
 
-The Covid-19 vaccine was not effective in protecting men against the covid-19, the ratio of being infected was set as 3:2.
-The Covid-19 vaccine was successful in protecting women against Covid-19, the odds ratio being 1:2.
-The Covid-19 vaccine was not effective in treating people who identified as gay. The odds ratio of being infected is 3:1.
-The individuals that were Drug Users were effectively protected by the vaccine, The odds ratio of being infected was set 1:2,
+The Covid-19 vaccine was not effective in protecting men against the covid-19, the ratio of being infected was set as 3:2.The covid-19 effectiveness was `r effectivenessguy`.
+The Covid-19 vaccine was successful in protecting women against Covid-19, the odds ratio being 1:2.The covid-19 effectiveness was `r effectivenessgals`.
+The Covid-19 vaccine was not effective in treating people who identified as gay. The odds ratio of being infected is 3:1.The covid-19 effectiveness was `r effectivenessgay`.
+The individuals that were Drug Users were effectively protected by the vaccine, The odds ratio of being infected was set 1:2. The covid-19 effectiveness was `r effectivenessyes`.
 
 If you are a male of identify as gay it is not recommended to recieve the vaccination. However, if you are a female or a druguser, the vaccine was reported to have been effective. 
 
