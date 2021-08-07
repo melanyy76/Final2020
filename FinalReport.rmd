@@ -131,7 +131,7 @@ hi=(guysfish$conf.int[2]/(guysfish$conf.int[2] +1))*100
 options(digits=2)
 ```
 
-### Effectiveness Confidence Interval `r low` to `r hi`
+# Effectiveness Confidence Interval `r low` to `r hi`
 
 
 
@@ -199,7 +199,7 @@ hi=(galsfish$conf.int[2]/(galsfish$conf.int[2] +1))
 options(digits=2)
 ```
 
-# "Effectiveness Confidence Interval", `r low` to `r hi`)
+# Effectiveness Confidence Interval, `r low` to `r hi`)
 
 
 
@@ -244,9 +244,9 @@ colPerc(table1)
 ### Inferential
 
 ```{r}
-chisq.test(table3)
-chisqtestGC(table3)
-gayfish <- fisher.test(table3)
+chisq.test(table1)
+chisqtestGC(table1)
+gayfish <- fisher.test(table1)
 gayfish
 ```
 
@@ -266,7 +266,7 @@ hi=(gayfish$conf.int[2]/(gayfish$conf.int[2] +1))
 options(digits=2)
 ```
 
-### Effectiveness Confidence Interval `r low` to `r hi`
+# Effectiveness Confidence Interval `r low` to `r hi`
 
 
 
@@ -304,8 +304,8 @@ This barplot complies that 34% of people who are drug users and recieved the vac
 
 ```{r}
 table1 <- xtabs(~infected + treatment, data=DrugUser)
-rowPerc(table3)
-colPerc(table3)
+rowPerc(table1)
+colPerc(table1)
 ```
 
 
@@ -322,28 +322,25 @@ The fishers exact test illustrates that the odds ratio is 33.
 DrugUsers(yes) who got the drug were about 2.5 times more likely to get covid-19 than those who only took the placebo.
 Since the p-value is a small of 6e-06, it can help conclude that we can reject the null hypothesis amd can confirm that those who are vaccinated and say "yes" to Drug Use are less likely to get infeccted by covid-19.
 
+# Effectiveness Confidence Interval `r low` to `r hi`
+
 ```{r}
 effect <- yesfish$p.value/(yesfish$p.value +1)
-effectivenessyes = yesfish$estimate/(yesfish$estimate +1)
-print(effectivenessgal*100)
+effectivenessyes = yesfish$estimate/(yesfish$estimate +1)*100
+print(effectivenessyes)
 ```
 
 ```{r}
-low=(gayfish$conf.int[1]/(gayfish$conf.int[1] +1))
-hi=(gayfish$conf.int[2]/(gayfish$conf.int[2] +1))
+low=(yesfish$conf.int[1]/(yesfish$conf.int[1] +1))
+hi=(yesfish$conf.int[2]/(yesfish$conf.int[2] +1))
 options(digits=2)
 ```
 
-### Effectiveness Confidence Interval `r low` to `r hi`
+# Conclusion and Recommendations
 
-
-
-# Conclusion Recommendations
-
-The Covid-19 vaccine was not effective in protecting men against the covid-19, the ratio of being infected was set as 3:2.The covid-19 effectiveness was `r effectivenessguy`.
-The Covid-19 vaccine was successful in protecting women against Covid-19, the odds ratio being 1:2.The covid-19 effectiveness was `r effectivenessgals`.
-The Covid-19 vaccine was not effective in treating people who identified as gay. The odds ratio of being infected is 3:1.The covid-19 effectiveness was `r effectivenessgay`.
-The individuals that were Drug Users were effectively protected by the vaccine, The odds ratio of being infected was set 1:2. The covid-19 effectiveness was `r effectivenessyes`.
+The Covid-19 vaccine was not effective in protecting men against the covid-19, the ratio of being infected was set as 3:2.
+The Covid-19 vaccine was successful in protecting women against Covid-19, the odds ratio being 1:2.
+The Covid-19 vaccine was not effective in treating people who identified as gay. The odds ratio of being infected is 3:1.
+The individuals that were Drug Users were effectively protected by the vaccine, The odds ratio of being infected was set 1:2.
 
 If you are a male of identify as gay it is not recommended to recieve the vaccination. However, if you are a female or a druguser, the vaccine was reported to have been effective. 
-
